@@ -1,8 +1,8 @@
 ### Falta fazer
 
-# [] - Rota para ativar e desativar produtos.
+# [x] - Rota para ativar e desativar produtos.
 
-# [] - Rota para ativar e desativar categorias.
+# [x] - Rota para ativar e desativar categorias.
 
 # [] - Rota para recuperação de senha (forgot password).
 
