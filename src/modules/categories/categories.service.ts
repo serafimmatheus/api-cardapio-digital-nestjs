@@ -22,6 +22,10 @@ export class CategoriesService {
     return await this.categoryRepo.update(slug, updateCategoryDto);
   }
 
+  async updateIsActive(slug: string) {
+    return await this.categoryRepo.updateIsActive(slug);
+  }
+
   async remove(slug: string) {
     return await this.categoryRepo.delete(slug);
   }

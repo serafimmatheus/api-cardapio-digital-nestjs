@@ -112,6 +112,22 @@ export class CategoriesController {
     return await this.categoriesService.update(slug, updateCategoryDto);
   }
 
+  @ApiOperation({ summary: 'Update one category by slug' })
+  @ApiResponse({
+    status: 201,
+    description: 'Return updated category.',
+  })
+  @ApiParam({
+    name: 'slug',
+    required: true,
+    description: 'Category slug',
+  })
+  @ApiBearerAuth()
+  @Put(':slug/toggle-category')
+  async updateIsActive(@Param('slug') slug: string) {
+    return await this.categoriesService.updateIsActive(slug);
+  }
+
   @ApiBearerAuth()
   @Delete(':slug')
   async remove(@Param('slug') slug: string) {

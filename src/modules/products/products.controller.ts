@@ -15,6 +15,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -84,15 +85,41 @@ export class ProductsController {
   @Put(':slug')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'update one product by slug' })
-  update(@Param('slug') slug: string, @Body() body: UpdateProductDto) {
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        slug: { type: 'string' },
+        description: { type: 'string' },
+        categories: { type: 'array', items: { type: 'string' } },
+        price: { type: 'number' },
+        image: { type: 'string' },
+        isActive: { type: 'boolean' },
+      },
+    },
+  })
+  async update(@Param('slug') slug: string, @Body() body: UpdateProductDto) {
     const { ...updateProductDto } = body;
-    return this.productsService.update(slug, updateProductDto);
+    return await this.productsService.update(slug, updateProductDto);
+  }
+
+  @Put(':slug/toogle-product')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'update one product by slug' })
+  @ApiParam({
+    name: 'slug',
+    required: true,
+    description: 'Product slug',
+  })
+  async updateIsActive(@Param('slug') slug: string) {
+    return await this.productsService.updateIsActive(slug);
   }
 
   @Delete(':slug')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'delete one product by slug' })
-  remove(@Param('slug') slug: string) {
-    return this.productsService.remove(slug);
+  async remove(@Param('slug') slug: string) {
+    return await this.productsService.remove(slug);
   }
 }

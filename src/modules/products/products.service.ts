@@ -18,12 +18,15 @@ export class ProductsService {
     return await this.productRepo.findOne(slug);
   }
 
-  update(slug: string, updateProductDto: UpdateProductDto) {
-    console.log(updateProductDto);
-    return `This action updates a #${slug} product`;
+  async update(slug: string, updateProductDto: UpdateProductDto) {
+    return await this.productRepo.update(slug, updateProductDto);
   }
 
-  remove(slug: string) {
-    return `This action removes a #${slug} product`;
+  async updateIsActive(slug: string) {
+    return await this.productRepo.updateIsActive(slug);
+  }
+
+  async remove(slug: string) {
+    return await this.productRepo.delete(slug);
   }
 }
