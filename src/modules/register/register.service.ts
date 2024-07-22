@@ -21,4 +21,27 @@ export class RegisterService {
   async verifyCode(code: string) {
     return await this.registerRepo.verifyCode(code);
   }
+
+  async forgotPassword(email: string) {
+    return await this.registerRepo.forgotPassword(email);
+  }
+
+  async resetPassword(token: string, password: string) {
+    return await this.registerRepo.resetPassword(token, password);
+  }
+
+  async verifyEmail(token: string) {
+    return await this.registerRepo.verifyEmail(token);
+  }
+  async resendEmail(email: string) {
+    return await this.registerRepo.resendEmail(email);
+  }
+
+  async logout(token: string) {
+    return await this.registerRepo.logout(token);
+  }
+
+  async getSession(token: string) {
+    return await this.registerRepo.getSession(token);
+  }
 }

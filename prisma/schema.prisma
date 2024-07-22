@@ -72,6 +72,7 @@ model VerificationRequest {
 enum TokenType {
   PASSWORD_RECOVER
   AUTHENTICATE_WITH_PASSWORD
+  EMAIL_CONFIRMATION
 }
 
 model Token {

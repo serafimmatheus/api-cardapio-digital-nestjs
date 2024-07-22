@@ -4,6 +4,7 @@ module.exports = {
     project: 'tsconfig.json',
     tsconfigRootDir: __dirname,
     sourceType: 'module',
+    ignorePatterns: ['prisma/*.js'],
   },
   plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [

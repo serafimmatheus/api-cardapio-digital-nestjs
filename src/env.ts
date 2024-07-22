@@ -9,6 +9,7 @@ export const envSchema = z.object({
   EMAIL_HOST: z.string(),
   EMAIL_USER_NAME: z.string(),
   EMAIL_PASSWORD: z.string(),
+  BASE_URL: z.string().url(),
 });
 
 export type Env = z.infer<typeof envSchema>;

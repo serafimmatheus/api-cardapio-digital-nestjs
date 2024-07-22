@@ -27,11 +27,11 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Categories')
-@UseGuards(AuthGuard('jwt'))
 @Controller('/api/v1/categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a categories' })
@@ -61,7 +61,6 @@ export class CategoriesController {
     status: 200,
     description: 'Return all categories.',
   })
-  @ApiBearerAuth()
   @Get()
   async findAll() {
     return await this.categoriesService.findAll();
@@ -77,7 +76,6 @@ export class CategoriesController {
     required: true,
     description: 'Category slug',
   })
-  @ApiBearerAuth()
   @Get(':slug')
   async findOne(@Param('slug') slug: string) {
     return await this.categoriesService.findOne(slug);
@@ -104,7 +102,8 @@ export class CategoriesController {
     },
   })
   @ApiBearerAuth()
-  @Put(':slug')
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':slug/update')
   async update(
     @Param('slug') slug: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -123,13 +122,15 @@ export class CategoriesController {
     description: 'Category slug',
   })
   @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Put(':slug/toggle-category')
   async updateIsActive(@Param('slug') slug: string) {
     return await this.categoriesService.updateIsActive(slug);
   }
 
   @ApiBearerAuth()
-  @Delete(':slug')
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':slug/delete')
   async remove(@Param('slug') slug: string) {
     return await this.categoriesService.remove(slug);
   }

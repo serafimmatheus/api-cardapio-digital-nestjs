@@ -27,7 +27,11 @@ export class ProductRepository implements ProductRepositoryProps {
   constructor(private prisma: PrismaService) {}
 
   async findMany(): Promise<Product[]> {
-    return await this.prisma.product.findMany();
+    return await this.prisma.product.findMany({
+      include: {
+        categories: true,
+      },
+    });
   }
 
   async findOne(slug: string): Promise<Product> {

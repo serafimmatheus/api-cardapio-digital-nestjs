@@ -2,7 +2,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Param,
   Delete,
@@ -10,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { createAuthDto, CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto, UpdateAuthPasswordDto } from './dto/update-auth.dto';
 import {
   ApiBearerAuth,
@@ -19,7 +17,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ZodValidationPipe } from '../pipes/pipes.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from './current-user-decorator';
 import { TokenPayload } from './jwt.strategy';
@@ -78,7 +75,7 @@ export class AuthController {
     const userProfile = await this.authService.findMyProfile(user.sub);
     const { password, ...newUser } = userProfile;
 
-    return newUser;
+    return { user: newUser };
   }
 
   @ApiBearerAuth()
@@ -96,7 +93,7 @@ export class AuthController {
       },
     },
   })
-  @Put(':id')
+  @Put(':id/update')
   async update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
     return await this.authService.update(id, updateAuthDto);
   }

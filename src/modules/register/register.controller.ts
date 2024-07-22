@@ -4,11 +4,17 @@ import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ZodValidationPipe } from '../pipes/pipes.service';
 import { CreateAuthDto, createAuthDto } from '../auth/dto/create-auth.dto';
 import {
+  CreateForgotPasswordDto,
+  createForgotPasswordDto,
   CreateRegisterDto,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   createRegisterDto,
+  CreateResetPasswordDto,
+  createResetPasswordDto,
   CreateVerifyCodeDto,
   createVerifyCodeDto,
+  createVerifyEmaildDto,
+  CreateVerifyEmaildDto,
 } from './dto/create-register.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 
@@ -33,15 +39,24 @@ export class RegisterController {
         name: { type: 'string' },
         email: { type: 'string' },
         image: { type: 'string' },
-        password: { type: 'boolean' },
+        password: { type: 'string' },
       },
     },
   })
-  create(
+  async create(
     @Body(new ZodValidationPipe(createAuthDto))
     createRegisterDto: CreateAuthDto,
   ) {
-    return this.registerService.create(createRegisterDto);
+    const { message, token } =
+      await this.registerService.create(createRegisterDto);
+
+    await this.mailerService.sendMail({
+      to: createRegisterDto.email,
+      subject: 'no-reply',
+      text: `${process.env.BASE_URL}?token=${token}`,
+    });
+
+    return { message };
   }
 
   @Post('login')
@@ -108,5 +123,192 @@ export class RegisterController {
     });
 
     return { token: verify.token };
+  }
+
+  @Post('forgot-password')
+  @ApiOperation({ summary: 'Send email forgot password.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The records been successfully created.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string' },
+      },
+    },
+  })
+  async forgotPassword(
+    @Body(new ZodValidationPipe(createForgotPasswordDto))
+    body: CreateForgotPasswordDto,
+  ) {
+    const { email } = body;
+
+    const { message, code } = await this.registerService.forgotPassword(email);
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'no-reply',
+      text: `<h1>Clique no link</h1><a href="${process.env.BASE_URL}?${code}">Alterar Senha</a>`,
+    });
+
+    return { message };
+  }
+
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Reset password.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The records been successfully created.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        token: { type: 'string' },
+        password: { type: 'string' },
+      },
+    },
+  })
+  async resetPassword(
+    @Body(new ZodValidationPipe(createResetPasswordDto))
+    body: CreateResetPasswordDto,
+  ) {
+    const { token, password } = body;
+
+    const { email, message } = await this.registerService.resetPassword(
+      token,
+      password,
+    );
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'no-reply',
+      text: 'Password updated',
+    });
+
+    return { message };
+  }
+
+  @Post('verify-email')
+  @ApiOperation({ summary: 'Verify Email' })
+  @ApiResponse({
+    status: 201,
+    description: 'The records been successfully created.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        token: { type: 'string' },
+      },
+    },
+  })
+  async verifyEmail(
+    @Body(new ZodValidationPipe(createVerifyEmaildDto))
+    body: CreateVerifyEmaildDto,
+  ) {
+    const { token } = body;
+
+    const { email, message } = await this.registerService.verifyEmail(token);
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'no-reply',
+      text: 'Email verified',
+    });
+
+    return { message };
+  }
+
+  @Post('resend-email')
+  @ApiOperation({ summary: 'Resend E-mail' })
+  @ApiResponse({
+    status: 201,
+    description: 'The records been successfully created.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string' },
+      },
+    },
+  })
+  async resendEmail(
+    @Body(new ZodValidationPipe(createForgotPasswordDto))
+    body: CreateForgotPasswordDto,
+  ) {
+    const { email } = body;
+
+    const { message, token } = await this.registerService.resendEmail(email);
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'no-reply',
+      text: `<h1>Clique no link</h1><a href="${process.env.BASE_URL}?${token}">verificar email</a>`,
+    });
+
+    return { message };
+  }
+
+  @Post('logout')
+  @ApiOperation({ summary: 'Logout' })
+  @ApiResponse({
+    status: 201,
+    description: 'The records been successfully created.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        token: { type: 'string' },
+      },
+    },
+  })
+  async logout(
+    @Body(new ZodValidationPipe(createVerifyEmaildDto))
+    body: CreateVerifyEmaildDto,
+  ) {
+    const { token } = body;
+
+    const { message, email } = await this.registerService.logout(token);
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'no-reply',
+      text: 'Logout',
+    });
+
+    return { message };
+  }
+
+  @Post('session')
+  @ApiOperation({ summary: 'Session' })
+  @ApiResponse({
+    status: 201,
+    description: 'The records been successfully created.',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        token: { type: 'string' },
+      },
+    },
+  })
+  async getSession(
+    @Body(new ZodValidationPipe(createVerifyEmaildDto))
+    body: CreateVerifyEmaildDto,
+  ) {
+    const { token } = body;
+
+    const { user } = await this.registerService.getSession(token);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...newUser } = user;
+
+    return { user: newUser };
   }
 }

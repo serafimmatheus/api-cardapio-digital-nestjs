@@ -23,11 +23,11 @@ import { ZodValidationPipe } from '../pipes/pipes.service';
 import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Products')
-@UseGuards(AuthGuard('jwt'))
 @Controller('/api/v1/products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a products' })
@@ -69,20 +69,19 @@ export class ProductsController {
   }
 
   @Get()
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all Products' })
   async findAll() {
     return await this.productsService.findAll();
   }
 
   @Get(':slug')
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get one product by slug' })
   async findOne(@Param('slug') slug: string) {
     return await this.productsService.findOne(slug);
   }
 
-  @Put(':slug')
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':slug/update')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'update one product by slug' })
   @ApiBody({
@@ -104,6 +103,7 @@ export class ProductsController {
     return await this.productsService.update(slug, updateProductDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Put(':slug/toogle-product')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'update one product by slug' })
@@ -116,7 +116,8 @@ export class ProductsController {
     return await this.productsService.updateIsActive(slug);
   }
 
-  @Delete(':slug')
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':slug/delete')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'delete one product by slug' })
   async remove(@Param('slug') slug: string) {
