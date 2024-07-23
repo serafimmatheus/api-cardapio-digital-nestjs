@@ -98,12 +98,7 @@ export class ProductRepository implements ProductRepositoryProps {
           slug,
         },
         data: {
-          name: data.name,
-          slug: data.slug,
-          description: data.description,
-          price: data.price,
-          image: data.image,
-          isActive: data.isActive,
+          ...data,
           categories: {
             disconnect: product.categories.map((category: any) => ({
               slug: category.slug,
@@ -123,11 +118,7 @@ export class ProductRepository implements ProductRepositoryProps {
         slug,
       },
       data: {
-        name: data.name,
-        description: data.description,
-        price: data.price,
-        image: data.image,
-        isActive: data.isActive,
+        ...data,
         categories: {
           disconnect: product.categories.map((category: any) => ({
             slug: category.slug,
